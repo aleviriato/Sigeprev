@@ -1,0 +1,61 @@
+-------------------------------
+-- Data criação: 01/07/2020
+-- Data aplicação pré: 01/07/2020
+-- Data aplicação prod: 
+-------------------------------
+create table TB_WRK_REGRAS_INTERSEC
+(
+  cod_ins                     VARCHAR2(1),
+  num_seq_regras_intersec     NUMBER,
+  cod_tipo_fluxo              VARCHAR2(10) NOT NULL,
+  cod_tarefa                  NUMBER NOT NULL,
+  cod_tipo_fluxo_assoc        VARCHAR2(10) NOT NULL,
+  des_lista_tarefas_assoc     VARCHAR2(100) NOT NULL,
+  dat_ing                     DATE NOT NULL,
+  dat_ult_atu                 DATE NOT NULL,
+  nom_usu_ult_atu             VARCHAR2(40) NOT NULL,
+  nom_pro_ult_atu             VARCHAR2(40) NOT NULL
+  cod_condicao                VARCHAR2(1),
+  des_lista_status            VARCHAR2(100),
+  num_seq_regras_intersec_pai NUMBER,
+  flg_tipo_fluxo_opc          CHAR(1),
+  des_lista_tarefas_opc       NUMBER,
+  val_tarefa_opc              NUMBER
+);
+
+-- Add comments to the columns 
+comment on column TB_WRK_REGRAS_INTERSEC.cod_ins
+  is 'Código da Instituição';
+comment on column TB_WRK_REGRAS_INTERSEC.num_seq_regras_intersec
+  is 'Número de sequencia do registro (PK)';
+comment on column TB_WRK_REGRAS_INTERSEC.cod_tipo_fluxo
+  is 'Tpo do Fluxo de origem da intersecção';
+comment on column TB_WRK_REGRAS_INTERSEC.cod_tarefa
+  is 'Tarefa do Fluxo de origem da intersecção';
+comment on column TB_WRK_REGRAS_INTERSEC.cod_tipo_fluxo_assoc
+  is 'Tpo do Fluxo de destino da intersecção';
+comment on column TB_WRK_REGRAS_INTERSEC.des_lista_tarefas_assoc
+  is 'Lista de Tarefas do Fluxo de destino da intersecção, separado por virgulas (incluir as tarefas de loop da tarefa)';
+comment on column TB_WRK_REGRAS_INTERSEC.dat_ing
+  is 'Data de inserção do registro';
+comment on column TB_WRK_REGRAS_INTERSEC.dat_ult_atu
+  is 'Data da última atuailização do registro';
+comment on column TB_WRK_REGRAS_INTERSEC.nom_usu_ult_atu
+  is 'Nome do último usuário de atualização';
+comment on column TB_WRK_REGRAS_INTERSEC.nom_pro_ult_atu
+  is 'Nome do último processo de atualização';
+comment on column TB_WRK_REGRAS_INTERSEC.cod_condicao
+  is 'Código da Condição para reazlizar a intersecao (E: Existe N:Não existe)';
+comment on column TB_WRK_REGRAS_INTERSEC.des_lista_status
+  is 'Lista de Status da condição para realizzar a intersecção (separado por virgulas e cad status entre aspas simples)';
+comment on column TB_WRK_REGRAS_INTERSEC.num_seq_regras_intersec_pai
+  is 'Referencia a regra pai da mesma (self join) criando uma relação do tipo "AND" em vez de "OR"';
+comment on column TB_WRK_REGRAS_INTERSEC.flg_tipo_fluxo_opc
+  is 'Condição de valor de opção selecionada em tarefa. O tipo de fluxo da opção';
+comment on column TB_WRK_REGRAS_INTERSEC.des_lista_tarefas_opc
+  is 'Condição de valor de opção selecionada em tarefa. A liste de tarefas do fluxo de opção, separado por virgulas';
+comment on column TB_WRK_REGRAS_INTERSEC.val_tarefa_opc
+  is 'O Valor da opção selecionada';
+  
+  
+alter table  tb_wrk_regras_intersec add constraint pk_wrk_regras_intersec primary key (cod_ins, num_Seq_regras_intersec); 

@@ -1,0 +1,65 @@
+-------------------------------
+-- Data criação: 01/07/2020
+-- Data aplicação pré: 01/07/2020
+-- Data aplicação prod: 01/07/2020
+-- Comentário: Criação do Registro no Repositório
+-------------------------------
+-- Create table
+create table USER_IPESP.TB_NPM_BENEFICIARIO
+(
+  num_seq                               NUMBER not null,
+  cod_ins                               NUMBER(2),
+  cod_adm_tra                           VARCHAR2(10),
+  cod_tarefa                            NUMBER(8),
+  cod_registro                          NUMBER(8),
+  cod_ide_cli_serv                      VARCHAR2(20),
+  cod_ide_cli_ben                       VARCHAR2(20),
+  dat_ing                               DATE,
+  dat_ult_atu                           DATE,
+  nom_usu_ult_atu                       VARCHAR2(40),
+  nom_pro_ult_atu                       VARCHAR2(80),
+  proporcao                             NUMBER(8,4),
+  dat_ini_ben                           DATE,
+  dat_ini_dep                           DATE,
+  tmp_uniao_estavel_casamento           VARCHAR2(200),
+  dat_fim_ben_prevista                  DATE,
+  flg_invalido_deficiencia              VARCHAR2(1),
+  flg_possui_ben_prev                   VARCHAR2(1),
+  flg_exigencia_pericia_medica          VARCHAR2(1),
+  flg_exigencia_acumulat_cumprida       VARCHAR2(1),
+  flg_exigencia_doc_cumprida            VARCHAR2(1),
+  cod_perfil_beneficiario               NUMBER,
+  cod_classe                            NUMBER,
+  cod_grupo                             NUMBER,
+  sub_classe                            NUMBER,
+  seq_regra_benef                       NUMBER,
+  embasamento                           VARCHAR2(500),
+  flg_deferir                           VARCHAR2(1),
+  desc_exigencia_pericia_medica         VARCHAR2(1),
+  desc_exigencia_acumulat_cumprida      VARCHAR2(1),
+  desc_exigencia_doc_cumprida           VARCHAR2(1),
+  flg_reducao_cumulatividade            VARCHAR2(1),
+  val_total_beneficiario                NUMBER(20,6),
+  flg_caminho_exigencia_acumulatividade VARCHAR2(1),
+  flg_deve_criar_exig_per_med           VARCHAR2(1),
+  flg_deve_criar_exig_doc               VARCHAR2(1),
+  num_depend                            NUMBER(8),
+  dat_nasc                              DATE,
+  cod_parentesco                        VARCHAR2(5),
+  observacoes                           VARCHAR2(180),
+  dat_requerimento                      DATE
+);
+
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table USER_IPESP.TB_NPM_BENEFICIARIO
+  add constraint PK_NPM_BENEFICIARIO primary key (NUM_SEQ);
+  
+
+---------------------------------------------------
+-- Data criação: 01/07/2020
+-- Data aplicação pré: 01/07/2020
+-- Data aplicação prod:  
+-- Comentário: Criação do Registro no Repositório
+---------------------------------------------------
+alter table tb_npm_beneficiario add flg_dep_inclusao char(1);
+comment on column tb_npm_beneficiario.flg_dep_inclusao is 'Flag que indica se trata-se de dependente incluido no fluxo de inclusão';
