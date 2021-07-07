@@ -34,11 +34,16 @@ insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_F
 values ('1', 3, 'NPI', 365, 'NPM', '366,370,376,380,383', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 2', 'E', '''P''', null, null, null, null);
 
 insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_FLUXO, COD_TAREFA, COD_TIPO_FLUXO_ASSOC, DES_LISTA_TAREFAS_ASSOC, DAT_ING, DAT_ULT_ATU, NOM_USU_ULT_ATU, NOM_PRO_ULT_ATU, COD_CONDICAO, DES_LISTA_STATUS, NUM_SEQ_REGRAS_INTERSEC_PAI, FLG_TIPO_FLUXO_OPC, DES_LISTA_TAREFAS_OPC, VAL_TAREFA_OPC)
-values ('1', 6, 'NPI', 372, 'NPM', '367', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'E', '''T''', 5, 'N', 365.373, 2);
+values ('1', 6, 'NPI', 372, 'NPM', '367', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'E', '''T''', 5, 'A', 367, 4);
 
 insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_FLUXO, COD_TAREFA, COD_TIPO_FLUXO_ASSOC, DES_LISTA_TAREFAS_ASSOC, DAT_ING, DAT_ULT_ATU, NOM_USU_ULT_ATU, NOM_PRO_ULT_ATU, COD_CONDICAO, DES_LISTA_STATUS, NUM_SEQ_REGRAS_INTERSEC_PAI, FLG_TIPO_FLUXO_OPC, DES_LISTA_TAREFAS_OPC, VAL_TAREFA_OPC)
 values ('1', 4, 'NPI', 365, 'NPM', '367', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 3', 'E', '''P''', null, 'N', 365, 2);
 
 insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_FLUXO, COD_TAREFA, COD_TIPO_FLUXO_ASSOC, DES_LISTA_TAREFAS_ASSOC, DAT_ING, DAT_ULT_ATU, NOM_USU_ULT_ATU, NOM_PRO_ULT_ATU, COD_CONDICAO, DES_LISTA_STATUS, NUM_SEQ_REGRAS_INTERSEC_PAI, FLG_TIPO_FLUXO_OPC, DES_LISTA_TAREFAS_OPC, VAL_TAREFA_OPC)
-values ('1', 5, 'NPI', 372, 'NPM', '375,377', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'N', '''T''', null, 'N', 365.373, 2);
+values ('1', 5, 'NPI', 372, 'NPM', '375,377', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'N', '''T''', null, 'A', 367, 4);
 
+insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_FLUXO, COD_TAREFA, COD_TIPO_FLUXO_ASSOC, DES_LISTA_TAREFAS_ASSOC, DAT_ING, DAT_ULT_ATU, NOM_USU_ULT_ATU, NOM_PRO_ULT_ATU, COD_CONDICAO, DES_LISTA_STATUS, NUM_SEQ_REGRAS_INTERSEC_PAI, FLG_TIPO_FLUXO_OPC, DES_LISTA_TAREFAS_OPC, VAL_TAREFA_OPC)
+values ('1', 8, 'NPI', 372, 'NPM', '375,377', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'N', '''T''', null, 'A', 367, 2);
+
+insert into tb_wrk_regras_intersec (COD_INS, NUM_SEQ_REGRAS_INTERSEC, COD_TIPO_FLUXO, COD_TAREFA, COD_TIPO_FLUXO_ASSOC, DES_LISTA_TAREFAS_ASSOC, DAT_ING, DAT_ULT_ATU, NOM_USU_ULT_ATU, NOM_PRO_ULT_ATU, COD_CONDICAO, DES_LISTA_STATUS, NUM_SEQ_REGRAS_INTERSEC_PAI, FLG_TIPO_FLUXO_OPC, DES_LISTA_TAREFAS_OPC, VAL_TAREFA_OPC)
+values ('1', 9, 'NPI', 372, 'NPM', '367', to_date('21-06-2021', 'dd-mm-yyyy'), to_date('21-06-2021', 'dd-mm-yyyy'), 'AVIRIATO', 'CENARIO 5', 'E', '''T''', 8, 'A', 367, 2);

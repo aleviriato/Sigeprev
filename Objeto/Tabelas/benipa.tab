@@ -1,0 +1,124 @@
+-------------------------------
+-- Data criação: 01/07/2020
+-- Data aplicação pré: 01/07/2020
+-- Data aplicação prod: 01/07/2020
+-- Comentário: Criação do Registro  préviamente existente no Repositório
+-------------------------------
+-- Create table
+create table USER_IPESP.BENIPA
+(
+  ipa_cod_ins                  NUMBER(8) not null,
+  ipa_ide_cli                  VARCHAR2(20) not null,
+  ipa_ind_tip_tra              VARCHAR2(5) not null,
+  ipa_cod_adm_tra              VARCHAR2(10) not null,
+  ipa_num_ben                  VARCHAR2(2) not null,
+  ipa_ind_vig_pag              VARCHAR2(1) not null,
+  ipa_fec_vig_pag              DATE default TO_DATE('11/11/1111', 'DD/MM/YYYY'),
+  ipa_ide_rec_pag              VARCHAR2(11),
+  ipa_fec_dev                  DATE,
+  ipa_fec_ces                  DATE,
+  ipa_ind_cau_ces              VARCHAR2(5),
+  ipa_gru_pro                  NUMBER(4) default 1 not null,
+  ipa_fec_pro                  DATE default TO_DATE('11/11/1111', 'DD/MM/YYYY'),
+  ipa_fec_ult_liq              DATE default TO_DATE('11/11/1111', 'DD/MM/YYYY'),
+  ipa_per_ult_dis              DATE,
+  ipa_per_pri_dis              DATE,
+  ipa_fec_ing                  DATE default TO_DATE('11/11/1111', 'DD/MM/YYYY'),
+  ipa_fec_ult_man              DATE default TO_DATE('11/11/1111', 'DD/MM/YYYY'),
+  ipa_nom_usu_man              NVARCHAR2(50) not null,
+  ipa_nom_pro_man              VARCHAR2(50) not null,
+  ipa_porc_ben                 NUMBER(8,4) default 100,
+  ipa_grp_fam                  NUMBER(4) default 1 not null,
+  ipa_tip_rep                  VARCHAR2(1) default 'P',
+  ipa_cod_con                  NUMBER(8) default 0,
+  ipa_ide_ben                  VARCHAR2(11) not null,
+  ipa_seq_regra_benef          NUMBER,
+  ipa_cod_classe               NUMBER,
+  ipa_cod_grupo                NUMBER,
+  ipa_cod_perfil               NUMBER,
+  ipa_flg_status               CHAR(1),
+  ipa_enquad_pag               VARCHAR2(180),
+  ipa_obs                      VARCHAR2(180),
+  ipa_subclasse                NUMBER default 1,
+  ipa_num_ord_jud              NUMBER(8),
+  ipa_cod_tip_cap              VARCHAR2(5),
+  ipa_cod_parentesco           VARCHAR2(5),
+  ipa_flg_invalido_deficiencia VARCHAR2(1));
+  
+  
+  comment on table USER_IPESP.BENIPA
+  is 'Instrucciones de pago: contiene la informacion de los causantes de pension y de los dependientes en caso de pension por muerte y reclusion';
+-- Add comments to the columns 
+comment on column USER_IPESP.BENIPA.ipa_cod_ins
+  is 'Codigo de Insitituto';
+comment on column USER_IPESP.BENIPA.ipa_ide_cli
+  is 'Numero de cliente o cuenta';
+comment on column USER_IPESP.BENIPA.ipa_ind_tip_tra
+  is 'Tipo de tramite o pension';
+comment on column USER_IPESP.BENIPA.ipa_cod_adm_tra
+  is 'Codigo de pension';
+comment on column USER_IPESP.BENIPA.ipa_num_ben
+  is 'Numero de beneficiario';
+comment on column USER_IPESP.BENIPA.ipa_ind_vig_pag
+  is 'Vigencia del pago (N,V,C,R), N: N?o requerido, R: requerido, C: Cancelado, E:extinto, V: Vigente';
+comment on column USER_IPESP.BENIPA.ipa_fec_vig_pag
+  is 'Fecha de vigencia del pago';
+comment on column USER_IPESP.BENIPA.ipa_ide_rec_pag
+  is 'CPF del receptor de pago';
+comment on column USER_IPESP.BENIPA.ipa_fec_dev
+  is 'Data de devengamiento(inicio de pagamento do beneficio)';
+comment on column USER_IPESP.BENIPA.ipa_fec_ces
+  is 'Data de cese (fim de pagamento do beneficio)';
+comment on column USER_IPESP.BENIPA.ipa_ind_cau_ces
+  is 'Causal de cese';
+comment on column USER_IPESP.BENIPA.ipa_gru_pro
+  is 'Grupo de proceso al que se asocia el causante y sus dependientes';
+comment on column USER_IPESP.BENIPA.ipa_fec_pro
+  is 'Fecha de prorroga';
+comment on column USER_IPESP.BENIPA.ipa_fec_ult_liq
+  is 'Fecha ultima liquidacion';
+comment on column USER_IPESP.BENIPA.ipa_per_ult_dis
+  is 'Periodo ultimo pago';
+comment on column USER_IPESP.BENIPA.ipa_per_pri_dis
+  is 'Periodo primeiro pago';
+comment on column USER_IPESP.BENIPA.ipa_fec_ing
+  is 'Fecha de ingreso del registro';
+comment on column USER_IPESP.BENIPA.ipa_fec_ult_man
+  is 'Fecha de ultima mantencion';
+comment on column USER_IPESP.BENIPA.ipa_nom_usu_man
+  is 'Usuario que efectuo ultima mantencion';
+comment on column USER_IPESP.BENIPA.ipa_nom_pro_man
+  is 'Proceso con que se efectuo la ultima mantencion';
+comment on column USER_IPESP.BENIPA.ipa_porc_ben
+  is 'Porcentual do beneficio';
+comment on column USER_IPESP.BENIPA.ipa_grp_fam
+  is 'grupo familiar a que pertence o beneficiado';
+comment on column USER_IPESP.BENIPA.ipa_tip_rep
+  is 'P: Pensioinsta, T: Tutor';
+comment on column USER_IPESP.BENIPA.ipa_cod_con
+  is 'Codigo da conta';
+comment on column USER_IPESP.BENIPA.ipa_ide_ben
+  is 'Cpf do beneficiario';
+comment on column USER_IPESP.BENIPA.ipa_flg_status
+  is 'Status do pagamento do beneficio conforme tabela tb_beneficiario';
+comment on column USER_IPESP.BENIPA.ipa_enquad_pag
+  is 'Descric?o do enquadramento (fundamentac?o legal) do pagamento do beneficio';
+comment on column USER_IPESP.BENIPA.ipa_num_ord_jud
+  is 'NUMERO DA ORDEM JUDICIAL ASSOCIADA';
+
+
+create index USER_IPESP.INDEX_TRAMITE on USER_IPESP.BENIPA (IPA_COD_ADM_TRA);
+
+alter table USER_IPESP.BENIPA
+  add constraint PK_BENIPA primary key (IPA_COD_INS, IPA_IDE_CLI, IPA_IND_TIP_TRA, IPA_COD_ADM_TRA, IPA_NUM_BEN, IPA_GRP_FAM);
+   
+---------------------------------------------------
+-- Data criação: 01/07/2020
+-- Data aplicação pré: 01/07/2020
+-- Data aplicação prod:  
+-- Comentário: alteração Task 67143
+---------------------------------------------------
+alter table benipa add ipa_flg_dep_importado  CHAR(1);
+comment on column benipa.ipa_flg_dep_importado is 'Flag que indica se registro se trata de benef. importado de fluxo associado, apenas para fins de consulta';
+
+

@@ -61,5 +61,12 @@ alter table USER_IPESP.TB_NPM_BENEFICIARIO
 -- Data aplicação prod:  
 -- Comentário: Criação do Registro no Repositório
 ---------------------------------------------------
-alter table tb_npm_beneficiario add flg_dep_inclusao char(1);
-comment on column tb_npm_beneficiario.flg_dep_inclusao is 'Flag que indica se trata-se de dependente incluido no fluxo de inclusão';
+
+alter table tb_npm_beneficiario add num_seq_npm_importado  NUMBER;
+comment on column tb_npm_beneficiario.num_seq_npm_importado is 'Número de sequencia dos dados na tabela referentes a origem do benef. iportado (Self join)';
+
+alter table tb_npm_beneficiario add flg_reserva_cota  CHAR(1);
+comment on column tb_npm_beneficiario.num_seq_npm_importado is 'Reserva Cota desse Beneficio para o período atuais';
+
+
+

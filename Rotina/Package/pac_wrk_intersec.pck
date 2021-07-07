@@ -1,5 +1,11 @@
 create or replace package user_ipesp.pac_wrk_intersec
 as
+
+  function fnc_ret_opc(i_cod_ins           in char, 
+                      i_cod_adm_tra       in varchar2,
+                      i_cod_tipo          in varchar2,
+                      i_cod_tar           in varchar2
+                      ) return number;
    function fnc_bloqueia_formalizacao(i_cod_ins            in wrktip.tip_cod_ins%type,
                                       i_cod_adm_tra        in wrkcli.cli_cod_adm_tra%type,
                                       i_cod_reg            in wrkreg.reg_cod_registro%type,    
@@ -9,6 +15,7 @@ as
    procedure sp_sincroniza_dados_tarefa(i_cod_ins            in wrktip.tip_cod_ins%type,                              
                                        i_cod_adm_tra        in wrkcli.cli_cod_adm_tra%type,
                                        i_cod_adm_tra_assoc  in wrkcli.cli_cod_adm_tra%type,
+                                       i_cod_registro       in wrkreg.reg_cod_registro%type,
                                        o_msg_status         out varchar2,
                                        o_cod_status         out number,
                                        i_usuario            in varchar2,
@@ -81,7 +88,6 @@ as
                                              and reg.reg_cod_estado <> ''E'' 
                                              and reg.reg_cod_opc is not null))';
    
-   dbms_output.put_line(v_cmd);
    begin
      execute immediate v_cmd into  v_cod_opc using i_cod_ins, i_cod_tipo, i_cod_adm_tra;
    exception 
@@ -173,7 +179,6 @@ as
         if i.des_lista_status is not null then               
           v_cmd :=  v_cmd||' where reg_cod_estado in ('||i.des_lista_status||')';
         end if;   
-        dbms_output.put_line(v_cmd);
         --
         execute immediate v_cmd into  v_qtd
                                 using i_cod_ins,
@@ -364,6 +369,7 @@ as
   procedure sp_sincroniza_dados_tarefa(i_cod_ins            in wrktip.tip_cod_ins%type,                              
                                        i_cod_adm_tra        in wrkcli.cli_cod_adm_tra%type,
                                        i_cod_adm_tra_assoc  in wrkcli.cli_cod_adm_tra%type,
+                                       i_cod_registro       in wrkreg.reg_cod_registro%type,
                                        o_msg_status         out varchar2,
                                        o_cod_status         out number,
                                        i_usuario            in varchar2,
@@ -372,6 +378,10 @@ as
     v_qtd number;      
     v_num_seq number;
     v_des_erro varchar2(4000);
+    v_cod_registro wrkreg.reg_cod_registro%type;
+    v_cod_registro_pai wrkreg.reg_cod_registro%type;
+    v_porc number;
+    v_reg_cod_tarefa wrkreg.reg_cod_tarefa%type;
     
   begin 
     -- Se ja tem flag , indica que ja foi incluido
@@ -380,15 +390,75 @@ as
       from tb_npm_beneficiario npm
      where npm.cod_ins = i_cod_ins
        and npm.cod_adm_tra = i_cod_adm_tra_assoc
-       and npm.flg_dep_inclusao = 'S';
+       and npm.num_seq_npm_importado is not null;
     -- 
     if v_qtd > 0 then 
+      o_cod_status := 0;
       return;
     end if;           
     --
+    -- localizando registro valido 
+    v_cod_registro := fnc_npm_ret_ult_cod_registro(i_cod_ins,
+                                                   i_cod_adm_tra,
+                                                   i_cod_registro);
+                                                   
+    
+    
+    v_cod_registro_pai := fnc_npm_ret_ult_cod_registro(i_cod_ins,
+                                                       i_cod_adm_tra_assoc,
+                                                       null);  
+                                                       
+                                                           
+    
+    select reg.reg_cod_tarefa
+      into  v_reg_cod_tarefa
+      from wrkreg reg
+      where reg.reg_cod_ins = '1'
+        and reg.reg_cod_adm_tra = i_cod_adm_tra_assoc
+        and reg.reg_cod_registro = v_cod_registro_pai
+        and rownum <2;
+        
+    /*select reg.reg_cod_registro,  reg.reg_cod_tarefa
+      into v_cod_registro_pai,v_reg_cod_tarefa
+      from wrkreg reg
+      where reg.reg_cod_ins = '1'
+        and reg.reg_cod_adm_tra = i_cod_adm_tra_assoc
+        and reg.reg_cod_estado = 'P'
+        and rownum <2;*/
+                                                                                                         
+   /* select count(1)
+      into v_qtd
+      from tb_npm_beneficiario n2
+     where n2.cod_ins = i_cod_ins
+       and n2.cod_adm_tra = i_cod_adm_tra
+       and n2.cod_registro = i_cod_registro;
+    if v_qtd = 0 then     
+      begin
+        select cod_registro
+          into v_cod_registro
+          from tb_npm_beneficiario n2
+         where n2.cod_ins = i_cod_ins
+           and n2.cod_adm_tra = i_cod_adm_tra
+           and n2.num_seq = (select max(num_Seq)
+                               from tb_npm_beneficiario n2
+                              where n2.cod_ins = i_cod_ins
+                                and n2.cod_adm_tra = i_cod_adm_tra);
+      exception 
+        when no_data_found then 
+          o_cod_status := 0;
+          return;
+      end;                                
+    else 
+      v_cod_registro := i_cod_registro;
+    end if;*/
+    if v_cod_registro is null then 
+      o_cod_status := 0;
+      return;  
+    end if;
+    --
     v_num_seq := seq_npm_beneficiario.nextval;
     --   
-    insert into tb_npm_beneficiario 
+    insert into tb_npm_beneficiario
     (num_seq,
      cod_ins,
      cod_adm_tra,
@@ -430,19 +500,19 @@ as
      cod_parentesco,
      observacoes,
      dat_requerimento,
-     flg_dep_inclusao)
+     num_seq_npm_importado)
      select 
        v_num_seq as num_seq,
        cod_ins,
        i_cod_adm_tra_assoc as cod_adm_tra,
-       cod_tarefa,
-       cod_registro,
+       v_reg_cod_tarefa as cod_tarefa,
+       v_cod_registro_pai as cod_registro,
        cod_ide_cli_serv,
        cod_ide_cli_ben,
-       dat_ing,
-       dat_ult_atu,
-       nom_usu_ult_atu,
-       nom_pro_ult_atu,
+       sysdate as dat_ing,
+       sysdate as dat_ult_atu,
+       i_usuario  as nom_usu_ult_atu,
+       i_processo as nom_pro_ult_atu,
        proporcao,
        dat_ini_ben,
        dat_ini_dep,
@@ -473,94 +543,132 @@ as
        cod_parentesco,
        observacoes,
        dat_requerimento,
-       flg_dep_inclusao
+       num_seq
      from tb_npm_beneficiario nbpm
     where nbpm.cod_ins = i_cod_ins
       and nbpm.cod_adm_tra = i_cod_adm_tra
-      and nbpm.flg_dep_inclusao = 'S';
+      and nbpm.num_seq_npm_importado is null
+      and nbpm.cod_registro = v_cod_registro;
+                             /* (select cod_registro
+                                 from tb_npm_beneficiario n2
+                                where n2.cod_ins = i_cod_ins
+                                  and n2.cod_adm_tra = i_cod_adm_tra
+                                  and n2.num_seq = (select max(num_Seq)
+                                                      from tb_npm_beneficiario n2
+                                                     where n2.cod_ins = i_cod_ins
+                                                       and n2.cod_adm_tra = i_cod_adm_tra))*/
+    --    
+    insert into benipa
+           (IPA_COD_INS,
+            IPA_IDE_CLI,
+            IPA_IND_TIP_TRA,
+            IPA_COD_ADM_TRA,
+            IPA_NUM_BEN,
+            IPA_IND_VIG_PAG,
+            IPA_FEC_VIG_PAG,
+            IPA_IDE_REC_PAG,
+            IPA_FEC_DEV,
+            IPA_FEC_CES,
+            IPA_IND_CAU_CES,
+            IPA_GRU_PRO,
+            IPA_FEC_PRO,
+            IPA_FEC_ULT_LIQ,
+            IPA_PER_ULT_DIS,
+            IPA_PER_PRI_DIS,
+            IPA_FEC_ING,
+            IPA_FEC_ULT_MAN,
+            IPA_NOM_USU_MAN,
+            IPA_NOM_PRO_MAN,
+            IPA_PORC_BEN,
+            IPA_GRP_FAM,
+            IPA_TIP_REP,
+            IPA_COD_CON,
+            IPA_IDE_BEN,
+            IPA_SEQ_REGRA_BENEF,
+            IPA_COD_CLASSE,
+            IPA_COD_GRUPO,
+            IPA_COD_PERFIL,
+            IPA_FLG_STATUS,
+            IPA_ENQUAD_PAG,
+            IPA_OBS,
+            IPA_SUBCLASSE,
+            IPA_NUM_ORD_JUD,
+            IPA_COD_TIP_CAP,
+            IPA_COD_PARENTESCO,
+            IPA_FLG_INVALIDO_DEFICIENCIA,
+            ipa_flg_dep_importado)   
+     select IPA_COD_INS,
+            IPA_IDE_CLI,
+            'NPM' IPA_IND_TIP_TRA,
+            i_cod_adm_tra_assoc as IPA_COD_ADM_TRA,
+            IPA_NUM_BEN,
+            IPA_IND_VIG_PAG,
+            IPA_FEC_VIG_PAG,
+            IPA_IDE_REC_PAG,
+            IPA_FEC_DEV,
+            IPA_FEC_CES,
+            IPA_IND_CAU_CES,
+            IPA_GRU_PRO,
+            IPA_FEC_PRO,
+            IPA_FEC_ULT_LIQ,
+            IPA_PER_ULT_DIS,
+            IPA_PER_PRI_DIS,
+            sysdate as IPA_FEC_ING,
+            sysdate as IPA_FEC_ULT_MAN,
+            i_usuario as IPA_NOM_USU_MAN,
+            i_processo as IPA_NOM_PRO_MAN,
+            IPA_PORC_BEN,
+            IPA_GRP_FAM,
+            IPA_TIP_REP,
+            IPA_COD_CON,
+            IPA_IDE_BEN,
+            IPA_SEQ_REGRA_BENEF,
+            IPA_COD_CLASSE,
+            IPA_COD_GRUPO,
+            IPA_COD_PERFIL,
+            IPA_FLG_STATUS,
+            IPA_ENQUAD_PAG,
+            IPA_OBS,
+            IPA_SUBCLASSE,
+            IPA_NUM_ORD_JUD,
+            IPA_COD_TIP_CAP,
+            IPA_COD_PARENTESCO,
+            IPA_FLG_INVALIDO_DEFICIENCIA,
+            'S'
+     from benipa ben
+    where ben.ipa_cod_ins = i_cod_ins
+      and ben.ipa_cod_adm_tra = i_cod_adm_tra
+      and ben.ipa_flg_dep_importado is null;       
     --
-    if sql%rowcount = 0 then 
-      insert into benipa  
-             (IPA_COD_INS,
-              IPA_IDE_CLI,
-              IPA_IND_TIP_TRA,
-              IPA_COD_ADM_TRA,
-              IPA_NUM_BEN,
-              IPA_IND_VIG_PAG,
-              IPA_FEC_VIG_PAG,
-              IPA_IDE_REC_PAG,
-              IPA_FEC_DEV,
-              IPA_FEC_CES,
-              IPA_IND_CAU_CES,
-              IPA_GRU_PRO,
-              IPA_FEC_PRO,
-              IPA_FEC_ULT_LIQ,
-              IPA_PER_ULT_DIS,
-              IPA_PER_PRI_DIS,
-              IPA_FEC_ING,
-              IPA_FEC_ULT_MAN,
-              IPA_NOM_USU_MAN,
-              IPA_NOM_PRO_MAN,
-              IPA_PORC_BEN,
-              IPA_GRP_FAM,
-              IPA_TIP_REP,
-              IPA_COD_CON,
-              IPA_IDE_BEN,
-              IPA_SEQ_REGRA_BENEF,
-              IPA_COD_CLASSE,
-              IPA_COD_GRUPO,
-              IPA_COD_PERFIL,
-              IPA_FLG_STATUS,
-              IPA_ENQUAD_PAG,
-              IPA_OBS,
-              IPA_SUBCLASSE,
-              IPA_NUM_ORD_JUD,
-              IPA_COD_TIP_CAP,
-              IPA_COD_PARENTESCO,
-              IPA_FLG_INVALIDO_DEFICIENCIA)   
-       select IPA_COD_INS,
-              IPA_IDE_CLI,
-              IPA_IND_TIP_TRA,
-              i_cod_adm_tra_assoc as IPA_COD_ADM_TRA,
-              IPA_NUM_BEN,
-              IPA_IND_VIG_PAG,
-              IPA_FEC_VIG_PAG,
-              IPA_IDE_REC_PAG,
-              IPA_FEC_DEV,
-              IPA_FEC_CES,
-              IPA_IND_CAU_CES,
-              IPA_GRU_PRO,
-              IPA_FEC_PRO,
-              IPA_FEC_ULT_LIQ,
-              IPA_PER_ULT_DIS,
-              IPA_PER_PRI_DIS,
-              IPA_FEC_ING,
-              IPA_FEC_ULT_MAN,
-              IPA_NOM_USU_MAN,
-              IPA_NOM_PRO_MAN,
-              IPA_PORC_BEN,
-              IPA_GRP_FAM,
-              IPA_TIP_REP,
-              IPA_COD_CON,
-              IPA_IDE_BEN,
-              IPA_SEQ_REGRA_BENEF,
-              IPA_COD_CLASSE,
-              IPA_COD_GRUPO,
-              IPA_COD_PERFIL,
-              IPA_FLG_STATUS,
-              IPA_ENQUAD_PAG,
-              IPA_OBS,
-              IPA_SUBCLASSE,
-              IPA_NUM_ORD_JUD,
-              IPA_COD_TIP_CAP,
-              IPA_COD_PARENTESCO,
-              IPA_FLG_INVALIDO_DEFICIENCIA
-       from benipa ben
-      where ben.ipa_cod_ins = i_cod_ins
-        and ben.ipa_cod_adm_tra = i_cod_adm_tra;    
-    end if;  
+    select count(1)
+      into v_qtd
+      from tb_npm_beneficiario npm
+     where npm.cod_ins = i_cod_ins
+       and npm.cod_adm_tra = i_cod_adm_tra_assoc
+       and npm.cod_registro = v_cod_registro_pai;
+       
+    if v_qtd =2 then 
+      v_porc := 50;
+    elsif v_qtd = 3 then 
+      v_porc := 33;
+    elsif v_qtd = 4 then       
+      v_porc := 25;
+    else 
+      v_porc := 100;
+    end if;
     --
+    update tb_npm_beneficiario npm
+       set npm.proporcao = v_porc
+     where npm.cod_ins = i_cod_ins
+       and npm.cod_adm_tra = i_cod_adm_tra_assoc
+       and npm.cod_registro = v_cod_registro_pai;
+      
+       
+ 
     o_cod_status := 0;
+    --
+  
+    
   exception    
     when others then  
       v_des_erro := sqlcode||'-'||sqlerrm;
@@ -573,7 +681,7 @@ as
                             i_cod_adm_tra        in wrkcli.cli_cod_adm_tra%type,                           
                             i_cod_reg            in wrkreg.reg_cod_registro%type,
                             i_opc                in wrkreg.reg_cod_opc%TYPE,
-                            o_cod_status         out number,   -- =0: normal, sem intersecção >0 com intersecção <0 erro
+                            o_cod_status         out number,   -- 0: normal, sem intersecção >0 com intersecção <0 erro
                             o_msg_status         out varchar2,
                             i_usuario            in varchar2,
                             i_processo           in varchar2)
@@ -709,7 +817,8 @@ as
          --
          sp_sincroniza_dados_tarefa(i_cod_ins, 
                                     i_cod_adm_tra, 
-                                    v_cod_adm_tra_assoc,                                   
+                                    v_cod_adm_tra_assoc, 
+                                    i_cod_reg,                                  
                                     v_cod_erro, 
                                     v_des_erro,
                                     i_usuario,
